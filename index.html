@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Heap Sort Visualizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="title-section">
+                <h1><i class="fas fa-sort-amount-up"></i> Heap Sort Visualizer</h1>
+                <p class="subtitle">Interactive visualization of the Heap Sort algorithm with step-by-step animations</p>
+            </div>
+            <div class="header-controls">
+                </button>
+            </div>
+        </div>
+        <div class="header-decoration"></div>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Algorithm Controls</h2>
+            </div>
+            <div class="card-body">
+                <div class="controls">
+                    <button id="generate" class="btn btn-primary">
+                        <i class="fas fa-random"></i> Generate New Array
+                    </button>
+                    
+                    <div class="form-group">
+                        <label for="array-size" class="form-label">Array Size:</label>
+                        <input type="number" id="array-size" class="form-control" min="5" max="50" value="15">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="speed" class="form-label">Speed:</label>
+                        <input type="range" id="speed" min="1" max="5" value="3">
+                        <span id="speed-value" class="badge">Normal</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <button id="sort" class="btn btn-success">
+                            <i class="fas fa-play"></i> Start
+                        </button>
+                        <button id="pause" class="btn btn-warning" disabled>
+                            <i class="fas fa-pause"></i> Pause
+                        </button>
+                        <button id="step" class="btn btn-outline-primary" disabled>
+                            <i class="fas fa-step-forward"></i> Step
+                        </button>
+                        <button id="reset" class="btn btn-danger" disabled>
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress"></div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(to top, var(--primary-light), var(--primary));"></div>
+                        <span class="legend-label">Unsorted</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(to top, #f8961e, #ffa41b);"></div>
+                        <span class="legend-label">Heapified</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(to top, #f72585, #fb5a83);"></div>
+                        <span class="legend-label">Current</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(to top, #4cc9f0, #4fd8ff);"></div>
+                        <span class="legend-label">Sorted</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="visualization-container">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Array Visualization</h2>
+                </div>
+                <div class="card-body p-0">
+                    <div class="array-container" id="array-container"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Heap Tree Visualization</h2>
+                </div>
+                <div class="card-body">
+                    <div class="tree-container" id="tree-container"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card explanation">
+            <div class="card-header">
+                <h2>How Heap Sort Works</h2>
+            </div>
+            <div class="card-body">
+                <p>Heap Sort is a comparison-based sorting algorithm that uses a binary heap data structure. It's an efficient in-place algorithm with O(n log n) time complexity in all cases.</p>
+                
+                <div class="algorithm-info">
+                    <div class="info-card">
+                        <h4>Time Complexity</h4>
+                        <p>O(n log n)</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Space Complexity</h4>
+                        <p>O(1)</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Stability</h4>
+                        <p>Not Stable</p>
+                    </div>
+                </div>
+                
+                <h3>The Algorithm:</h3>
+                <ol>
+                    <li><strong>Build a max heap</strong> from the input array (a max heap is a complete binary tree where parent nodes are greater than or equal to their children).</li>
+                    <li><strong>Extract the maximum element</strong> (root) repeatedly by placing it at the end of the array, and then re-heapify the reduced heap.</li>
+                </ol>
+                
+                <h3>Key Operations:</h3>
+                <ul>
+                    <li><strong>heapify</strong>: process of converting a binary tree into a heap where the parent node is larger than its children.</li>
+                    <li><strong>buildMaxHeap</strong>: arranges elements in the array to satisfy the heap property.</li>
+                    <li><strong>heapSort</strong>: repeatedly extracts the maximum element and rebuilds the heap.</li>
+                </ul>
+                
+                <h3>JavaScript Implementation:</h3>
+                <div class="code-container">
+                    <pre><code>function heapSort(arr) {
+    const n = arr.length;
+    
+    // Build max heap
+    for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+    
+    // Extract elements from heap one by one
+    for (let i = n - 1; i > 0; i--) {
+        // Move current root to end
+        [arr[0], arr[i]] = [arr[i], arr[0]];
+        
+        // Call max heapify on the reduced heap
+        heapify(arr, i, 0);
+    }
+    
+    return arr;
+}
+
+function heapify(arr, n, i) {
+    let largest = i;      // Initialize largest as root
+    let left = 2 * i + 1; // Left child
+    let right = 2 * i + 2; // Right child
+    
+    // If left child is larger than root
+    if (left < n && arr[left] > arr[largest]) {
+        largest = left;
+    }
+    
+    // If right child is larger than largest so far
+    if (right < n && arr[right] > arr[largest]) {
+        largest = right;
+    }
+    
+    // If largest is not root
+    if (largest !== i) {
+        [arr[i], arr[largest]] = [arr[largest], arr[i]];
+        
+        // Recursively heapify the affected sub-tree
+        heapify(arr, n, largest);
+    }
+}</code></pre>
+                </div>
+                
+                <h3>Advantages and Disadvantages:</h3>
+                <h4>Advantages:</h4>
+                <ul>
+                    <li>Efficient time complexity of O(n log n)</li>
+                    <li>In-place sorting (no extra space required)</li>
+                    <li>Works well with data that continues to arrive (priority queue implementations)</li>
+                </ul>
+                
+                <h4>Disadvantages:</h4>
+                <ul>
+                    <li>Not stable (relative order of equal elements may change)</li>
+                    <li>Slower in practice than quicksort for most datasets</li>
+                    <li>Cache performance is not optimal due to non-consecutive memory access</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 Heap Sort Visualizer | Developed by Carl Anthony Nolasc BSCS - 3</p>
+        <p>An interactive tool to understand how the Heap Sort algorithm works</p>
+        <p><a href="https://github.com/carlanthonynolasco28/Heap-Sort-Visualizer.git"><i class="fab fa-github"></i> Source Code</a> | <a href="#"><i class="fas fa-book"></i> Learn More</a></p>
+    </footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // DOM elements
+        const arrayContainer = document.getElementById('array-container');
+        const treeContainer = document.getElementById('tree-container');
+        const generateBtn = document.getElementById('generate');
+        const sortBtn = document.getElementById('sort');
+        const pauseBtn = document.getElementById('pause');
+        const stepBtn = document.getElementById('step');
+        const resetBtn = document.getElementById('reset');
+        const arraySizeInput = document.getElementById('array-size');
+        const speedSlider = document.getElementById('speed');
+        const speedValue = document.getElementById('speed-value');
+        const progressBar = document.getElementById('progress');
+        
+        // Variables
+        let array = [];
+        let animationSteps = [];
+        let currentStep = 0;
+        let animationInterval;
+        let isPaused = false;
+        let isSorting = false;
+        let speedOptions = {
+            1: { label: 'Very Slow', value: 1000 },
+            2: { label: 'Slow', value: 500 },
+            3: { label: 'Normal', value: 250 },
+            4: { label: 'Fast', value: 100 },
+            5: { label: 'Very Fast', value: 50 }
+        };
+        let currentSpeed = speedOptions[3].value;
+        
+        // Function to generate random array
+        function generateArray() {
+            const size = parseInt(arraySizeInput.value);
+            array = [];
+            
+            for (let i = 0; i < size; i++) {
+                // Random value between 5 and 100
+                array.push(Math.floor(Math.random() * 96) + 5);
+            }
+            
+            renderArray();
+            renderTree();
+            resetControls();
+        }
+        
+        // Function to render array as bars
+        function renderArray() {
+            arrayContainer.innerHTML = '';
+            
+            const maxVal = Math.max(...array);
+            
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.classList.add('array-bar');
+                bar.style.height = `${(value / maxVal) * 250}px`;
+                bar.dataset.value = value;
+                bar.textContent = value;
+                
+                arrayContainer.appendChild(bar);
+            });
+        }
+        
+        // Function to render the binary heap tree
+        function renderTree() {
+            treeContainer.innerHTML = '';
+            
+            if (array.length === 0) return;
+            
+            const maxHeight = Math.floor(Math.log2(array.length)) + 1;
+            
+            for (let level = 0; level < maxHeight; level++) {
+                const levelDiv = document.createElement('div');
+                levelDiv.classList.add('tree-level');
+                
+                const startIdx = Math.pow(2, level) - 1;
+                const endIdx = Math.min(Math.pow(2, level + 1) - 1, array.length);
+                
+                for (let i = startIdx; i < endIdx; i++) {
+                    const node = document.createElement('div');
+                    node.classList.add('tree-node');
+                    node.textContent = array[i];
+                    node.dataset.index = i;
+                    
+                    // Add edges to children
+                    const leftChildIdx = 2 * i + 1;
+                    const rightChildIdx = 2 * i + 2;
+                    
+                    if (leftChildIdx < array.length) {
+                        const edge = document.createElement('div');
+                        edge.classList.add('tree-edge');
+                        node.appendChild(edge);
+                    }
+                    
+                    levelDiv.appendChild(node);
+                }
+                
+                treeContainer.appendChild(levelDiv);
+            }
+        }
+        
+        // Heap Sort algorithm with animation recording
+        function prepareHeapSort(arr) {
+            // Create a copy of the array
+            const sortArray = [...arr];
+            animationSteps = [];
+            
+            const n = sortArray.length;
+            
+            // Build max heap
+            for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+                heapify(sortArray, n, i);
+            }
+            
+            // Add a step to show the complete heap
+            animationSteps.push({
+                type: 'heap-built',
+                array: [...sortArray]
+            });
+            
+            // Extract elements from heap one by one
+            for (let i = n - 1; i > 0; i--) {
+                // Move current root to end
+                animationSteps.push({
+                    type: 'select',
+                    indices: [0, i],
+                    array: [...sortArray]
+                });
+                
+                // Swap
+                [sortArray[0], sortArray[i]] = [sortArray[i], sortArray[0]];
+                
+                animationSteps.push({
+                    type: 'swap',
+                    indices: [0, i],
+                    array: [...sortArray]
+                });
+                
+                // Mark as sorted
+                animationSteps.push({
+                    type: 'sorted',
+                    index: i,
+                    array: [...sortArray]
+                });
+                
+                // Call max heapify on the reduced heap
+                heapify(sortArray, i, 0);
+            }
+            
+            // Mark the first element as sorted (last element to be sorted)
+            animationSteps.push({
+                type: 'sorted',
+                index: 0,
+                array: [...sortArray]
+            });
+            
+            // Mark sorting as complete
+            animationSteps.push({
+                type: 'done',
+                array: [...sortArray]
+            });
+            
+            return animationSteps;
+        }
+        
+        function heapify(arr, n, i) {
+            let largest = i;
+            let left = 2 * i + 1;
+            let right = 2 * i + 2;
+            
+            // Record comparing the nodes
+            animationSteps.push({
+                type: 'compare',
+                index: i,
+                array: [...arr]
+            });
+            
+            // If left child is larger than root
+            if (left < n) {
+                animationSteps.push({
+                    type: 'compare',
+                    index: left,
+                    array: [...arr]
+                });
+                
+                if (arr[left] > arr[largest]) {
+                    largest = left;
+                }
+            }
+            
+            // If right child is larger than largest so far
+            if (right < n) {
+                animationSteps.push({
+                    type: 'compare',
+                    index: right,
+                    array: [...arr]
+                });
+                
+                if (arr[right] > arr[largest]) {
+                    largest = right;
+                }
+            }
+            
+            // If largest is not root
+            if (largest !== i) {
+                animationSteps.push({
+                    type: 'select',
+                    indices: [i, largest],
+                    array: [...arr]
+                });
+                
+                // Swap
+                [arr[i], arr[largest]] = [arr[largest], arr[i]];
+                
+                animationSteps.push({
+                    type: 'swap',
+                    indices: [i, largest],
+                    array: [...arr]
+                });
+                
+                // Record the heapified state
+                animationSteps.push({
+                    type: 'heapify',
+                    index: i,
+                    array: [...arr]
+                });
+                
+                // Recursively heapify the affected sub-tree
+                heapify(arr, n, largest);
+            } else {
+                // Node is already in the right position
+                animationSteps.push({
+                    type: 'heapify',
+                    index: i,
+                    array: [...arr]
+                });
+            }
+        }
+        
+        // Function to animate the heap sort
+        function startAnimation() {
+            if (animationSteps.length === 0) return;
+            
+            isSorting = true;
+            currentStep = 0;
+            updateProgress(0);
+            
+            // Enable pause and step buttons
+            pauseBtn.disabled = false;
+            stepBtn.disabled = false;
+            resetBtn.disabled = false;
+            generateBtn.disabled = true;
+            sortBtn.disabled = true;
+            arraySizeInput.disabled = true;
+            
+            // Start animation
+            nextAnimationStep();
+        }
+        
+        function nextAnimationStep() {
+            if (currentStep >= animationSteps.length) {
+                finishAnimation();
+                return;
+            }
+            
+            if (isPaused) return;
+            
+            const step = animationSteps[currentStep];
+            updateProgress(currentStep / animationSteps.length * 100);
+            
+            // Update the array based on the current step
+            updateArrayVisualization(step);
+            updateTreeVisualization(step);
+            
+            currentStep++;
+            
+            // Schedule next step
+            animationInterval = setTimeout(nextAnimationStep, currentSpeed);
+        }
+        
+        function updateArrayVisualization(step) {
+            const bars = document.querySelectorAll('.array-bar');
+            
+            // Reset all bars
+            bars.forEach(bar => {
+                bar.classList.remove('current', 'sorted', 'heapified');
+            });
+            
+            // Update array values if needed
+            if (step.array) {
+                bars.forEach((bar, index) => {
+                    const value = step.array[index];
+                    const maxVal = Math.max(...step.array);
+                    bar.style.height = `${(value / maxVal) * 250}px`;
+                    bar.dataset.value = value;
+                    bar.textContent = value;
+                });
+            }
+            
+            // Apply visualization based on step type
+            switch (step.type) {
+                case 'compare':
+                    bars[step.index].classList.add('current');
+                    break;
+                case 'select':
+                    step.indices.forEach(index => {
+                        bars[index].classList.add('current');
+                    });
+                    break;
+                case 'swap':
+                    step.indices.forEach(index => {
+                        bars[index].classList.add('current');
+                    });
+                    break;
+                case 'heapify':
+                    bars[step.index].classList.add('heapified');
+                    break;
+                case 'heap-built':
+                    for (let i = 0; i < bars.length; i++) {
+                        bars[i].classList.add('heapified');
+                    }
+                    break;
+                case 'sorted':
+                    bars[step.index].classList.add('sorted');
+                    // Keep previously sorted elements marked
+                    for (let i = step.index + 1; i < bars.length; i++) {
+                        bars[i].classList.add('sorted');
+                    }
+                    break;
+                case 'done':
+                    for (let i = 0; i < bars.length; i++) {
+                        bars[i].classList.add('sorted');
+                    }
+                    break;
+            }
+        }
+        
+        function updateTreeVisualization(step) {
+            const nodes = document.querySelectorAll('.tree-node');
+            
+            // Reset all nodes
+            nodes.forEach(node => {
+                node.classList.remove('current', 'sorted', 'heapified');
+            });
+            
+            // Update tree values if needed
+            if (step.array) {
+                nodes.forEach(node => {
+                    const index = parseInt(node.dataset.index);
+                    node.textContent = step.array[index];
+                });
+            }
+            
+            // Apply visualization based on step type
+            switch (step.type) {
+                case 'compare':
+                    const compareNode = [...nodes].find(node => parseInt(node.dataset.index) === step.index);
+                    if (compareNode) compareNode.classList.add('current');
+                    break;
+                case 'select':
+                    step.indices.forEach(index => {
+                        const selectNode = [...nodes].find(node => parseInt(node.dataset.index) === index);
+                        if (selectNode) selectNode.classList.add('current');
+                    });
+                    break;
+                case 'swap':
+                    step.indices.forEach(index => {
+                        const swapNode = [...nodes].find(node => parseInt(node.dataset.index) === index);
+                        if (swapNode) swapNode.classList.add('current');
+                    });
+                    break;
+                case 'heapify':
+                    const heapifyNode = [...nodes].find(node => parseInt(node.dataset.index) === step.index);
+                    if (heapifyNode) heapifyNode.classList.add('heapified');
+                    break;
+                case 'heap-built':
+                    nodes.forEach(node => {
+                        node.classList.add('heapified');
+                    });
+                    break;
+                case 'sorted':
+                    const sortedNode = [...nodes].find(node => parseInt(node.dataset.index) === step.index);
+                    if (sortedNode) sortedNode.classList.add('sorted');
+                    
+                    // Keep previously sorted elements marked
+                    for (let i = step.index + 1; i < array.length; i++) {
+                        const prevSortedNode = [...nodes].find(node => parseInt(node.dataset.index) === i);
+                        if (prevSortedNode) prevSortedNode.classList.add('sorted');
+                    }
+                    break;
+                case 'done':
+                    nodes.forEach(node => {
+                        node.classList.add('sorted');
+                    });
+                    break;
+            }
+        }
+        
+        function updateProgress(percent) {
+            progressBar.style.width = `${percent}%`;
+        }
+        
+        function finishAnimation() {
+            isSorting = false;
+            isPaused = false;
+            clearTimeout(animationInterval);
+            
+            // Update buttons
+            pauseBtn.textContent = 'Pause';
+            pauseBtn.disabled = true;
+            stepBtn.disabled = true;
+            sortBtn.disabled = false;
+            generateBtn.disabled = false;
+            arraySizeInput.disabled = false;
+            
+            updateProgress(100);
+        }
+        
+        function resetControls() {
+            isSorting = false;
+            isPaused = false;
+            currentStep = 0;
+            clearTimeout(animationInterval);
+            
+            // Reset buttons
+            pauseBtn.textContent = 'Pause';
+            pauseBtn.disabled = true;
+            stepBtn.disabled = true;
+            resetBtn.disabled = true;
+            sortBtn.disabled = false;
+            generateBtn.disabled = false;
+            arraySizeInput.disabled = false;
+            
+            // Reset progress
+            updateProgress(0);
+            
+            // Reset visualization
+            const bars = document.querySelectorAll('.array-bar');
+            bars.forEach(bar => {
+                bar.classList.remove('current', 'sorted', 'heapified');
+            });
+            
+            const nodes = document.querySelectorAll('.tree-node');
+            nodes.forEach(node => {
+                node.classList.remove('current', 'sorted', 'heapified');
+            });
+        }
+        
+        // Event Listeners
+        generateBtn.addEventListener('click', generateArray);
+        
+        sortBtn.addEventListener('click', function() {
+            animationSteps = prepareHeapSort(array);
+            startAnimation();
+        });
+        
+        pauseBtn.addEventListener('click', function() {
+            isPaused = !isPaused;
+            this.textContent = isPaused ? 'Resume' : 'Pause';
+            
+            if (!isPaused && isSorting) {
+                nextAnimationStep();
+            }
+        });
+        
+        stepBtn.addEventListener('click', function() {
+            if (currentStep < animationSteps.length) {
+                // Clear any pending animation
+                clearTimeout(animationInterval);
+                
+                // Ensure we're in paused mode
+                isPaused = true;
+                pauseBtn.textContent = 'Resume';
+                
+                // Execute one step
+                const step = animationSteps[currentStep];
+                updateProgress(currentStep / animationSteps.length * 100);
+                updateArrayVisualization(step);
+                updateTreeVisualization(step);
+                currentStep++;
+                
+                // Check if we're done
+                if (currentStep >= animationSteps.length) {
+                    finishAnimation();
+                }
+            }
+        });
+        
+        resetBtn.addEventListener('click', function() {
+            clearTimeout(animationInterval);
+            renderArray();
+            renderTree();
+            resetControls();
+        });
+        
+        speedSlider.addEventListener('input', function() {
+            const speedOption = speedOptions[this.value];
+            currentSpeed = speedOption.value;
+            speedValue.textContent = speedOption.label;
+        });
+        
+        // Initialize
+        generateArray();
+    });
+</script>
+</body>
+</html>
